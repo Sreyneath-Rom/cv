@@ -1,129 +1,197 @@
 <template>
-  <div class="max-w-6xl mx-auto p-6 bg-gray-50">
-    <header class="text-center bg-gray-200 p-6 rounded-lg">
-      <img :src="personalInfo.photo" alt="Profile Photo" class="w-36 h-36 rounded-full object-cover mx-auto">
-      <h1 class="text-3xl font-bold mt-4">{{ personalInfo.name }}</h1>
-      <h2 class="text-xl text-gray-600">{{ personalInfo.position }}</h2>
-    </header>
-
-    <section class="text-center my-6 space-y-1">
-      <p class="text-sm text-gray-700"><span class="mr-2"></span>{{ personalInfo.phone }}</p>
-      <p class="text-sm text-gray-700"><span class="mr-2"></span>{{ personalInfo.email }}</p>
-      <p class="text-sm text-gray-700"><span class="mr-2"></span>{{ personalInfo.address }}</p>
-    </section>
-
-    <div class="md:flex md:gap-6">
-      <aside class="md:w-1/3 space-y-4">
-        <section class="bg-gray-100 p-4 rounded">
-          <h3 class="text-sm font-semibold border-b pb-2 mb-2">EDUCATION</h3>
-          <div v-for="(edu, index) in education" :key="index" class="mb-3">
-            <h4 class="font-medium">{{ edu.degree }}</h4>
-            <p class="text-sm text-gray-600">{{ edu.institution }}</p>
-            <p class="text-sm text-gray-500">{{ edu.period }}</p>
+  <div class="min-h-screen bg-gradient-to-b from-gray-50 to-gray-100 py-8">
+    <div class="max-w-6xl mx-auto px-6">
+      <!-- Header -->
+      <header class="bg-white rounded-xl shadow-md overflow-hidden -mt-6 mb-6">
+        <div class="md:flex items-center gap-6 p-6">
+          <div class="flex-shrink-0 mx-auto md:mx-0">
+            <img
+              :src="personalInfo.photo"
+              alt="Profile Photo"
+              class="w-36 h-36 rounded-full object-cover ring-4 ring-white shadow-lg"
+            />
           </div>
-        </section>
 
-        <section class="bg-gray-100 p-4 rounded">
-          <h3 class="text-sm font-semibold border-b pb-2 mb-2">TECHNICAL TOOLS</h3>
-          <ul class="list-disc list-inside text-sm space-y-1">
-            <li v-for="(tool, index) in technicalTools" :key="index">{{ tool }}</li>
-          </ul>
-        </section>
+          <div class="text-center md:text-left flex-1 mt-4 md:mt-0">
+            <h1 class="text-3xl font-extrabold tracking-tight text-gray-800">{{ personalInfo.name }}</h1>
+            <p class="mt-1 inline-block bg-gradient-to-r from-indigo-500 to-purple-500 text-white px-3 py-1 rounded-full text-sm font-medium">
+              {{ personalInfo.position }}
+            </p>
 
-        <section class="bg-gray-100 p-4 rounded">
-          <h3 class="text-sm font-semibold border-b pb-2 mb-2">LANGUAGES</h3>
-          <ul class="list-disc list-inside text-sm space-y-1">
-            <li v-for="(lang, index) in languages" :key="index">{{ lang.lang }} ({{ lang.level }})</li>
-          </ul>
-        </section>
+            <div class="mt-4 flex flex-col sm:flex-row sm:items-center sm:gap-4 justify-center md:justify-start text-sm text-gray-600">
+              <div class="flex items-center gap-2">
+                <svg class="w-4 h-4 text-indigo-500" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
+                </svg>
+                <span>{{ personalInfo.email }}</span>
+              </div>
+              <div class="flex items-center gap-2">
+                <svg class="w-4 h-4 text-green-500" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h2.586a1 1 0 01.707.293L12 6l3.707-2.707A1 1 0 0116.414 3H19a2 2 0 012 2v4a10 10 0 11-18 0V5z"/>
+                </svg>
+                <span>{{ personalInfo.phone }}</span>
+              </div>
+              <div class="flex items-center gap-2">
+                <svg class="w-4 h-4 text-orange-400" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 2C8.13 2 5 5.13 5 9c0 6.63 7 13 7 13s7-6.37 7-13c0-3.87-3.13-7-7-7z"/>
+                  <circle cx="12" cy="9" r="2.5" />
+                </svg>
+                <span>{{ personalInfo.address }}</span>
+              </div>
+            </div>
 
-        <section class="bg-gray-100 p-4 rounded">
-          <h3 class="text-sm font-semibold border-b pb-2 mb-2">HARD SKILLS</h3>
-          <ul class="list-disc list-inside text-sm space-y-1">
-            <li v-for="(skill, index) in hardSkills" :key="index">{{ skill }}</li>
-          </ul>
-        </section>
+          </div>
+        </div>
+      </header>
 
-        <section class="bg-gray-100 p-4 rounded">
-          <h3 class="text-sm font-semibold border-b pb-2 mb-2">SOFT SKILLS</h3>
-          <ul class="list-disc list-inside text-sm space-y-1">
-            <li v-for="(skill, index) in softSkills" :key="index">{{ skill }}</li>
-          </ul>
-        </section>
+      <!-- Content -->
+      <div class="md:flex md:gap-6">
+        <!-- Sidebar -->
+        <aside class="md:w-1/3 space-y-4 md:sticky md:top-8">
+          <section class="bg-white p-4 rounded-xl shadow">
+            <h3 class="text-sm font-semibold text-gray-700 border-b pb-2 mb-3">EDUCATION</h3>
+            <div v-for="(edu, index) in education" :key="index" class="mb-3">
+              <h4 class="font-medium text-gray-800">{{ edu.degree }}</h4>
+              <p class="text-sm text-gray-500">{{ edu.institution }}</p>
+              <p class="text-xs text-gray-400">{{ edu.period }}</p>
+            </div>
+          </section>
 
-        <section class="bg-gray-100 p-4 rounded">
-          <h3 class="text-sm font-semibold border-b pb-2 mb-2">HOBBIES/INTERESTS</h3>
-          <ul class="list-disc list-inside text-sm space-y-1">
-            <li v-for="(hobby, index) in hobbies" :key="index">{{ hobby }}</li>
-          </ul>
-        </section>
-      </aside>
+          <section class="bg-white p-4 rounded-xl shadow">
+            <h3 class="text-sm font-semibold text-gray-700 border-b pb-2 mb-3">TECHNICAL TOOLS</h3>
+            <div class="flex flex-wrap gap-2">
+              <span
+                v-for="(tool, i) in technicalTools"
+                :key="i"
+                class="text-xs bg-indigo-50 text-indigo-700 px-3 py-1 rounded-full shadow-sm"
+              >
+                {{ tool }}
+              </span>
+            </div>
+          </section>
 
-      <main class="md:w-2/3 space-y-6 mt-6 md:mt-0">
-        <section class="bg-white p-4 rounded shadow-sm">
-          <h3 class="text-lg font-semibold mb-3">About Me</h3>
-          <table class="table-auto w-full text-sm">
-            <tbody>
-              <tr>
-                <td class="border px-3 py-2 font-medium w-1/3">Full Name:</td>
-                <td class="border px-3 py-2">{{ aboutMe.fullName }}</td>
-              </tr>
-              <tr>
-                <td class="border px-3 py-2 font-medium">Date of birth:</td>
-                <td class="border px-3 py-2">{{ aboutMe.dob }}</td>
-              </tr>
-              <tr>
-                <td class="border px-3 py-2 font-medium">Place of birth:</td>
-                <td class="border px-3 py-2">{{ aboutMe.pob }}</td>
-              </tr>
-              <tr>
-                <td class="border px-3 py-2 font-medium">Gender:</td>
-                <td class="border px-3 py-2">{{ aboutMe.gender }}</td>
-              </tr>
-              <tr>
-                <td class="border px-3 py-2 font-medium">Nationality:</td>
-                <td class="border px-3 py-2">{{ aboutMe.nationality }}</td>
-              </tr>
-              <tr>
-                <td class="border px-3 py-2 font-medium">Status:</td>
-                <td class="border px-3 py-2">{{ aboutMe.status }}</td>
-              </tr>
-            </tbody>
-          </table>
-        </section>
-
-        <section class="bg-white p-4 rounded shadow-sm">
-          <h3 class="text-lg font-semibold mb-3">WORK EXPERIENCE</h3>
-          <div v-for="(exp, index) in workExperience" :key="index" class="mb-4">
-            <h4 class="font-medium">{{ exp.title }} <span class="text-sm text-gray-500">({{ exp.period }})</span></h4>
-            <p v-if="exp.type" class="text-sm text-gray-600">{{ exp.type }}</p>
-            <p class="text-sm">Role: <span class="font-medium">{{ exp.role }}</span></p>
-            <ul class="list-disc list-inside text-sm mt-2">
-              <li v-for="(desc, descIndex) in exp.descriptions" :key="descIndex">{{ desc }}</li>
+          <section class="bg-white p-4 rounded-xl shadow">
+            <h3 class="text-sm font-semibold text-gray-700 border-b pb-2 mb-3">LANGUAGES</h3>
+            <ul class="space-y-2">
+              <li v-for="(lang, index) in languages" :key="index" class="flex items-center justify-between">
+                <div>
+                  <span class="font-medium text-gray-800">{{ lang.lang }}</span>
+                  <div class="text-xs text-gray-400">{{ lang.level }}</div>
+                </div>
+                <div class="w-24 h-2 bg-gray-200 rounded overflow-hidden ml-3">
+                  <div
+                    class="h-full bg-gradient-to-r from-green-400 to-green-600"
+                    :style="{ width: languageLevelWidth(lang.level) }"
+                  ></div>
+                </div>
+              </li>
             </ul>
-          </div>
-        </section>
+          </section>
 
-        <section class="bg-white p-4 rounded shadow-sm">
-          <h3 class="text-lg font-semibold mb-3">Technical Workshops</h3>
-          <div v-for="(workshop, index) in workshops" :key="index" class="mb-4">
-            <h4 class="font-medium">{{ workshop.title }} <span class="text-sm text-gray-500">({{ workshop.date }})</span></h4>
-            <ul class="list-disc list-inside text-sm mt-2">
-              <li v-for="(desc, descIndex) in workshop.descriptions" :key="descIndex">{{ desc }}</li>
+          <section class="bg-white p-4 rounded-xl shadow">
+            <h3 class="text-sm font-semibold text-gray-700 border-b pb-2 mb-3">HARD SKILLS</h3>
+            <div class="space-y-3">
+              <div v-for="(skill, index) in hardSkills" :key="index" class="text-sm">
+                <div class="flex items-center justify-between">
+                  <span class="text-gray-800">{{ skill }}</span>
+                  <span class="text-xs text-gray-400">{{ getSkillPercent(skill) }}%</span>
+                </div>
+                <div class="w-full h-2 bg-gray-200 rounded mt-2 overflow-hidden">
+                  <div
+                    class="h-full bg-gradient-to-r from-indigo-400 to-purple-500"
+                    :style="{ width: getSkillPercent(skill) + '%' }"
+                  ></div>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <section class="bg-white p-4 rounded-xl shadow">
+            <h3 class="text-sm font-semibold text-gray-700 border-b pb-2 mb-3">SOFT SKILLS</h3>
+            <div class="flex flex-wrap gap-2">
+              <span v-for="(skill, i) in softSkills" :key="i" class="text-xs bg-yellow-50 text-yellow-800 px-3 py-1 rounded-full">
+                {{ skill }}
+              </span>
+            </div>
+          </section>
+
+          <section class="bg-white p-4 rounded-xl shadow">
+            <h3 class="text-sm font-semibold text-gray-700 border-b pb-2 mb-3">HOBBIES</h3>
+            <ul class="list-disc list-inside text-sm space-y-1 text-gray-700">
+              <li v-for="(hobby, i) in hobbies" :key="i">{{ hobby }}</li>
             </ul>
-          </div>
-        </section>
+          </section>
+        </aside>
 
-        <section class="bg-white p-4 rounded shadow-sm">
-          <h3 class="text-lg font-semibold mb-3">REFERENCES</h3>
-          <div v-for="(ref, index) in references" :key="index" class="mb-4">
-            <h4 class="font-medium">{{ ref.name }}</h4>
-            <p class="text-sm text-gray-600">{{ ref.position }}</p>
-            <p class="text-sm">Phone: {{ ref.phone }}</p>
-            <p class="text-sm">Email: {{ ref.email }}</p>
-          </div>
-        </section>
-      </main>
+        <!-- Main -->
+        <main class="md:w-2/3 mt-6 md:mt-0 space-y-6">
+          <section class="bg-white p-5 rounded-xl shadow">
+            <h3 class="text-lg font-semibold mb-3 text-gray-800">About Me</h3>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm text-gray-700">
+              <div class="space-y-2">
+                <div class="flex justify-between"><span class="font-medium">Full Name</span><span>{{ aboutMe.fullName }}</span></div>
+                <div class="flex justify-between"><span class="font-medium">Date of birth</span><span>{{ aboutMe.dob }}</span></div>
+                <div class="flex justify-between"><span class="font-medium">Place of birth</span><span>{{ aboutMe.pob }}</span></div>
+              </div>
+              <div class="space-y-2">
+                <div class="flex justify-between"><span class="font-medium">Gender</span><span>{{ aboutMe.gender }}</span></div>
+                <div class="flex justify-between"><span class="font-medium">Nationality</span><span>{{ aboutMe.nationality }}</span></div>
+                <div class="flex justify-between"><span class="font-medium">Status</span><span>{{ aboutMe.status }}</span></div>
+              </div>
+            </div>
+          </section>
+
+          <section class="bg-white p-5 rounded-xl shadow">
+            <h3 class="text-lg font-semibold mb-4 text-gray-800">Work Experience</h3>
+            <div class="space-y-6">
+              <div v-for="(exp, index) in workExperience" :key="index" class="relative pl-6">
+                <div class="absolute left-0 top-1">
+                  <span class="block w-3 h-3 rounded-full bg-indigo-500 ring-4 ring-white"></span>
+                </div>
+                <div class="text-sm">
+                  <div class="flex items-baseline justify-between">
+                    <h4 class="font-medium text-gray-800">{{ exp.title }}</h4>
+                    <span class="text-xs text-gray-400">{{ exp.period }}</span>
+                  </div>
+                  <div class="text-xs text-gray-500 mb-1">{{ exp.type ? exp.type + ' • ' : '' }}Role: <span class="font-medium text-gray-700">{{ exp.role }}</span></div>
+                  <ul class="list-disc list-inside text-gray-600 space-y-1">
+                    <li v-for="(desc, di) in exp.descriptions" :key="di">{{ desc }}</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <section class="bg-white p-5 rounded-xl shadow">
+            <h3 class="text-lg font-semibold mb-4 text-gray-800">Technical Workshops</h3>
+            <div class="space-y-4">
+              <div v-for="(workshop, i) in workshops" :key="i" class="p-3 rounded border border-gray-100">
+                <div class="flex justify-between items-baseline">
+                  <h4 class="font-medium text-gray-800">{{ workshop.title }}</h4>
+                  <div class="text-xs text-gray-400">{{ workshop.date }}</div>
+                </div>
+                <div v-if="workshop.facilitator" class="text-xs text-gray-500 mb-2">Facilitator: {{ workshop.facilitator }}</div>
+                <ul class="list-disc list-inside text-gray-600">
+                  <li v-for="(d, di) in workshop.descriptions" :key="di">{{ d }}</li>
+                </ul>
+              </div>
+            </div>
+          </section>
+
+          <section class="bg-white p-5 rounded-xl shadow">
+            <h3 class="text-lg font-semibold mb-4 text-gray-800">References</h3>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div v-for="(ref, index) in references" :key="index" class="p-3 border rounded">
+                <div class="font-medium text-gray-800">{{ ref.name }}</div>
+                <div class="text-sm text-gray-500">{{ ref.position }}</div>
+                <div class="text-sm text-gray-600 mt-2">Phone: <span class="font-medium">{{ ref.phone }}</span></div>
+                <div class="text-sm text-gray-600">Email: <span class="font-medium">{{ ref.email }}</span></div>
+              </div>
+            </div>
+          </section>
+
+        </main>
+      </div>
     </div>
   </div>
 </template>
@@ -156,16 +224,7 @@ export default {
         { degree: 'High School Diploma', institution: 'Varin High School', period: '2020 - 2023' }
       ],
       technicalTools: [
-        'Figma (Design)',
-        'Canva',
-        'Jira',
-        'Git/GitHub',
-        'Postman',
-        'Linux(Ubuntu)',
-        'AWS(EC2)',
-        'MS Office (Word, Excel, PowerPoint)',
-        'AI Tools (ChatGPT, Gemini , etc.)',
-        'Power BI'
+        'Figma', 'Canva', 'Jira', 'Git/GitHub', 'Postman', 'Linux', 'AWS', 'MS Office', 'AI Tools', 'Power BI'
       ],
       languages: [
         { lang: 'Khmer', level: 'Excellent' },
@@ -232,18 +291,18 @@ export default {
         'Tailwind CSS',
         'JavaScript',
         'PHP',
-        'Node.js (Basic REST API)',
-        'Python (Algorithm )',
-        'Database (MySQL)',
-        'OOP (TypeScript)',
+        'Node.js',
+        'Python',
+        'MySQL',
+        'TypeScript (OOP)',
         'Vue.js',
         'Laravel',
-        'Data Analytics ',
+        'Data Analytics',
         'Firebase',
         'WordPress'
       ],
       softSkills: [
-        'Problem solving ',
+        'Problem solving',
         'Adaptability',
         'Teamwork',
         'Time Management',
@@ -253,7 +312,7 @@ export default {
         'Creative'
       ],
       hobbies: [
-        'Researching ',
+        'Researching',
         'Coding practice',
         'Designing a Website On Trend'
       ],
@@ -288,7 +347,8 @@ export default {
         },
         {
           title: 'Project Management',
-          date: 'Feb 8, 2025 —Felix Leuker',
+          date: 'Feb 8, 2025',
+          facilitator: 'Felix Leuker',
           descriptions: [
             'Explored project management fundamentals using agile methodologies.',
             'Worked with tools such as Jira, Git, and GitHub to manage project workflows.',
@@ -317,6 +377,36 @@ export default {
         }
       ]
     };
+  },
+  methods: {
+    // derive a numeric percentage for skills (simple heuristic)
+    getSkillPercent(skill) {
+      const s = skill.toLowerCase();
+      if (s.includes('html') || s.includes('css') || s.includes('tailwind') || s.includes('bootstrap')) return 90;
+      if (s.includes('javascript') || s.includes('vue')) return 85;
+      if (s.includes('php') || s.includes('laravel')) return 75;
+      if (s.includes('node') || s.includes('python')) return 70;
+      if (s.includes('data') || s.includes('analytics') || s.includes('power bi')) return 65;
+      if (s.includes('mysql') || s.includes('firebase')) return 70;
+      return 60;
+    },
+    languageLevelWidth(level) {
+      const l = level.toLowerCase();
+      if (l.includes('excellent')) return '95%';
+      if (l.includes('advanced')) return '85%';
+      if (l.includes('intermediate')) return '65%';
+      if (l.includes('basic')) return '40%';
+      return '50%';
+    }
   }
 };
 </script>
+
+<style scoped>
+/* subtle improvements for better readability on different screen sizes */
+@media (min-width: 768px) {
+  header img {
+    transform: translateY(-4px);
+  }
+}
+</style>
