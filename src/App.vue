@@ -196,7 +196,7 @@
 
 <script>
 import profilePhoto from '@/assets/isme.png';
-import html2canvas from 'html2canvas';
+// import html2canvas from 'html2canvas';
 
 export default {
   name: 'Resume',
