@@ -3,7 +3,7 @@
     <div class="flex justify-end mb-4 px-4 sm:px-6 lg:px-8">
       <html2-canvas-exporter :target-ref="$refs.cvContent" @export-start="isExporting = true" @export-end="isExporting = false" />
     </div>
-    <div class="bg-white shadow-md rounded-3xl overflow-hidden letter-container">
+    <div class="bg-white shadow-md  overflow-hidden letter-container">
       <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
         <div ref="cvContent" class="cv-content">
           <!-- Header -->
@@ -92,7 +92,7 @@
                   </div>
                   <div class="flex items-center gap-3" v-if="primaryContact.address">
                     <svg
-                      class="w-5 h-5 text-orange-500"
+                      class="w-20 h-20 text-orange-500"
                       viewBox="0 0 24 24"
                       fill="none"
                       stroke="currentColor"
