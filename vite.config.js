@@ -15,6 +15,8 @@ export default defineConfig({
     alias: {
       '@': fileURLToPath(new URL('./src', import.meta.url)),
       '@components': fileURLToPath(new URL('./src/components', import.meta.url)),
+      // alias Vue to full build with template compiler
+      'vue': 'vue/dist/vue.esm-bundler.js',
     },
   },
 });
