@@ -287,7 +287,7 @@ const downloadPDF = async () => {
 
   const opt = {
     margin: 0,
-    filename: 'Sreyneath_Rom_Resume_2025.pdf',
+    filename: 'Sreyneath_Rom_Resume.pdf',
     image: { type: 'jpeg', quality: 0.98 },
     enableLinks: true,
     html2canvas: {
