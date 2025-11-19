@@ -22,10 +22,10 @@
   <!-- Header -->
   <div class="flex items-center border-b-4 border-gray-600 pb-4 mb-6">
     <img
-      :src="photo"
-      alt="Sreyneath Rom"
-      class="w-32 h-32 rounded-full object-cover mr-5 border-4 border-gray-600"
-    />
+  :src="photo"
+  alt="Sreyneath Rom"
+  class="w-32 h-32 rounded-full object-cover mr-5 border-4 border-gray-600 print:w-40 print:h-40 print:border-8"
+/>
     <div>
       <h1 class="text-3xl font-bold text-black">{{ name }}</h1>
       <h2 class="text-lg text-gray-600 mt-1 font-normal">{{ title }}</h2>
@@ -200,12 +200,16 @@
 </div>
 
 <!-- EXPORT BUTTONS -->
-<div class="mt-6 print:hidden flex gap-3">
-  <button @click="downloadPDF" class="inline-flex items-center gap-2 px-6 py-2 bg-gradient-to-r from-gray-600 to-gray-400 text-white font-semibold rounded-lg shadow hover:shadow-lg transition">
-    📄 Export PDF (HD)
+<div class="mt-8 print:hidden flex flex-col sm:flex-row gap-4">
+  <button @click="downloadPDF" :disabled="isExporting"
+    class="px-8 py-3 bg-gradient-to-r from-gray-700 to-gray-900 text-white font-semibold rounded-lg shadow-lg hover:shadow-xl transition flex items-center gap-3 disabled:opacity-70">
+    <span v-if="!isExporting">⬇️ Download PDF (Best for emailing)</span>
+    <span v-else>Generating HD PDF...</span>
   </button>
-  <button @click="printPDF" class="inline-flex items-center gap-2 px-6 py-2 bg-gray-300 text-gray-800 font-semibold rounded-lg shadow hover:shadow transition">
-    🖨 Print PDF (Vector)
+
+  <button @click="printPDF"
+    class="px-8 py-3 bg-green-600 text-white font-semibold rounded-lg shadow-lg hover:shadow-xl transition flex items-center gap-3">
+    🖨️ Save/Print as PDF (Perfect quality)
   </button>
 </div>
 
@@ -214,13 +218,12 @@
 </template>
 
 <script setup>
-import { ref } from 'vue';
-import photoFile from '@/assets/isme.png';
-import html2pdf from 'html2pdf.js';
+import { ref, nextTick } from 'vue'
+import photoFile from '@/assets/isme.png'
+import html2pdf from 'html2pdf.js'
 
-const resume = ref(null);
-const isExporting = ref(false);
-
+const resume = ref(null)
+const isExporting = ref(false)
 // Resume data
 const photo = photoFile;
 const name = 'SREYNEATH ROM';
@@ -257,35 +260,73 @@ const references = [
   { name:'Ms. Sovanchansreyleap KHENG', position:'PNC English Trainer', phone:'+855 78 819 152', email:'sovanchansreyleap.kheng@passerellesnumeriques.org' },
   { name:'Mr. Puthy KRY', position:'PNC Professional Life Trainer', phone:'+855 12 376 863', email:'puthy.kry@passerellesnumeriques.org' }
 ];
-
-// HD PDF Export
 const downloadPDF = async () => {
-  if (!resume.value) return;
-  isExporting.value = true;
-  await document.fonts.ready;
+  if (!resume.value) return
 
-  const element = resume.value;
+  isExporting.value = true
+  await document.fonts.ready
+  await nextTick()
+
+  // 1. Deep clone the resume
+  const clone = resume.value.cloneNode(true)
+
+  // 2. Inject a style tag that forces old-safe hex colors (kills oklch/lab/lch forever)
+  const safeStyles = document.createElement('style')
+  safeStyles.textContent = `
+    * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+    .bg-gray-200   { background-color: #e5e7eb !important; }
+    .bg-gray-700   { background-color: #374151 !important; }
+    .text-gray-600 { color: #4b5563 !important; }
+    .text-gray-700 { color: #374151 !important; }
+    .text-gray-800 { color: #1f2937 !important; }
+    .border-gray-600 { border-color: #4b5563 !important; }
+    .border-b-4 { border-bottom-width: 4px !important; }
+    .border-4 { border-width: 4px !important; }
+  `
+  clone.prepend(safeStyles)
+
   const opt = {
-    margin:       0,
-    filename:     'Sreyneath_Rom_CV.pdf',
-    image:        { type: 'png', quality: 1 },
-    html2canvas:  { scale: 5, dpi: 600, letterRendering: true, useCORS: true, backgroundColor: '#fff', scrollX: 0, scrollY: 0, windowWidth: 2480, windowHeight: element.scrollHeight },
-    jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait', compress: false },
-    pagebreak:    { mode: ['avoid-all','css','legacy'] }
-  };
+    margin: 0,
+    filename: 'Sreyneath_Rom_Resume_2025.pdf',
+    image: { type: 'jpeg', quality: 0.98 },
+    enableLinks: true,
+    html2canvas: {
+      scale: 4,
+      useCORS: true,
+      backgroundColor: '#ffffff',
+      letterRendering: true,
+      logging: false,
+      scrollX: 0,
+      scrollY: 0,
+      windowWidth: 2480,
+      // Double insurance: inject the same fix inside html2canvas's cloned document
+      onclone: (doc) => {
+        const extraFix = doc.createElement('style')
+        extraFix.textContent = safeStyles.textContent
+        doc.head.appendChild(extraFix)
+      }
+    },
+    jsPDF: {
+      unit: 'mm',
+      format: 'a4',
+      orientation: 'portrait',
+      compress: false
+    }
+  }
 
   try {
-    await html2pdf().set(opt).from(element).save();
+    await html2pdf().set(opt).from(clone).save()
   } catch (err) {
-    console.error(err);
-    alert('Export failed – try the PRINT PDF button.');
+    console.error('html2pdf failed → fallback to browser print', err)
+    alert('High-quality export failed — using perfect browser print instead.')
+    setTimeout(() => window.print(), 300)
   } finally {
-    isExporting.value = false;
+    isExporting.value = false
   }
-};
+}
 
-// Vector Print PDF
-const printPDF = () => window.print();
+// Perfect vector PDF (recommended for most recruiters)
+const printPDF = () => window.print()
 </script>
 
 <style>
