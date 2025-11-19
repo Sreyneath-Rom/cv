@@ -1,5 +1,14 @@
 <template>
   <div id="app" class="bg-white w-[210mm] min-h-[297mm] mx-auto p-[20mm] shadow-md text-gray-800 print:shadow-none print:mx-0 print:p-0 print:bg-white">
+
+    <!-- LOADING OVERLAY -->
+    <div v-if="isExporting" class="fixed inset-0 bg-black/40 flex items-center justify-center z-[9999]">
+      <div class="bg-white px-6 py-4 rounded-lg shadow text-gray-700 font-medium animate-pulse">
+        Exporting PDF, please wait...
+      </div>
+    </div>
+
+    <!-- RESUME CONTENT -->
     <div ref="resume">
       <!-- Header -->
       <div class="flex items-center border-b-4 border-gray-600 pb-4 mb-6">
@@ -14,12 +23,13 @@
       <div class="flex">
         <!-- LEFT COLUMN -->
         <div class="w-1/3 pr-4 bg-gray-200 p-3 print:bg-gray-200">
+
           <!-- Contact -->
           <div class="mb-5">
             <h3 class="bg-gray-700 text-white px-3 py-1 rounded text-sm uppercase tracking-wide mb-2">Contact</h3>
-            <div class="flex items-center mb-1 text-sm">📞 {{ phone }}</div>
-            <div class="flex items-center mb-1 text-sm">✉️ {{ email }}</div>
-            <div class="flex items-center mb-1 text-sm">🏠 {{ address }}</div>
+            <div class="text-sm mb-1"> {{ phone }}</div>
+            <div class="text-sm mb-1"> {{ email }}</div>
+            <div class="text-sm mb-1"> {{ address }}</div>
           </div>
 
           <!-- Education -->
@@ -75,6 +85,7 @@
 
         <!-- RIGHT COLUMN -->
         <div class="w-2/3 pl-4">
+
           <!-- About Me -->
           <div class="mb-6">
             <h3 class="bg-gray-700 text-white px-3 py-1 rounded text-sm uppercase tracking-wide mb-2">About Me</h3>
@@ -134,58 +145,84 @@
       </div>
     </div>
 
-    <!-- Download Button (hidden in print) -->
-    <button @click="downloadPDF"
-      class="mt-6 inline-flex items-center gap-2 px-6 py-2 bg-gradient-to-r from-gray-600 to-gray-400 text-white font-semibold rounded-lg shadow hover:shadow-lg hover:-translate-y-0.5 transition print:hidden">
-      📄 Download as PDF (A4)
-    </button>
+    <!-- DOWNLOAD BUTTONS -->
+    <div class="mt-6 print:hidden flex gap-3">
+      <button 
+        @click="downloadPDF('high')"
+        class="inline-flex items-center gap-2 px-6 py-2 bg-gradient-to-r from-gray-600 to-gray-400 text-white font-semibold rounded-lg shadow hover:shadow-lg transition">
+        📄 Export HD (Recommended)
+      </button>
+
+      <button 
+        @click="downloadPDF('fast')"
+        class="inline-flex items-center gap-2 px-6 py-2 bg-gray-300 text-gray-800 font-semibold rounded-lg shadow hover:shadow transition">
+        ⚡ Fast Export
+      </button>
+    </div>
   </div>
 </template>
-
-
 <script setup>
 import { ref } from 'vue';
-import html2canvas from 'html2canvas';
-import jsPDF from 'jspdf';
-import photoFile from '@/assets/isme.png'; // ✅ proper image import
+import photoFile from '@/assets/isme.png';
+import html2pdf from 'html2pdf.js';
 
+// Reference
 const resume = ref(null);
 
-// ✅ Improved multi-page PDF export function
-const downloadPDF = async () => {
+// Loading state
+const isExporting = ref(false);
+
+const downloadPDF = async (mode = "high") => {
+  if (!resume.value) return;
+
+  isExporting.value = true;
+
+  // Wait for fonts to load to avoid fallback font issues
+  await document.fonts.ready;
+
+  const config = {
+    high: { scale: 4, quality: 0.98 }, // High-quality
+    fast: { scale: 2, quality: 0.92 }  // Faster
+  }[mode];
+
   const element = resume.value;
 
-  const canvas = await html2canvas(element, {
-    scale: window.devicePixelRatio * 2, // sharper
-    useCORS: true,
-    backgroundColor: "#fff",
-    scrollY: -window.scrollY,
-  });
+  const options = {
+    margin: 0,
+    filename: 'Sreyneath_Rom_CV.pdf',
+    image: { type: 'png', quality: config.quality },
+    html2canvas: {
+      scale: config.scale,
+      useCORS: true,
+      allowTaint: false,
+      backgroundColor: '#ffffff',
+      scrollX: 0,
+      scrollY: 0,
+      windowWidth: 210 * 3.7795, // 210mm → px
+      windowHeight: element.scrollHeight,
+      // Ensure all elements are captured
+      logging: false
+    },
+    jsPDF: {
+      unit: 'mm',
+      format: 'a4',
+      orientation: 'portrait',
+      compress: true
+    },
+    pagebreak: { mode: ['avoid-all', 'css', 'legacy'] }
+  };
 
-  const imgData = canvas.toDataURL("image/png");
-  const pdf = new jsPDF("p", "mm", "a4");
-  const pageWidth = 210;
-  const pageHeight = 297;
-  const imgWidth = pageWidth;
-  const imgHeight = (canvas.height * imgWidth) / canvas.width;
-
-  let heightLeft = imgHeight;
-  let position = 0;
-
-  pdf.addImage(imgData, "PNG", 0, position, imgWidth, imgHeight);
-  heightLeft -= pageHeight;
-
-  while (heightLeft > 0) {
-    position -= pageHeight;
-    pdf.addPage();
-    pdf.addImage(imgData, "PNG", 0, position, imgWidth, imgHeight);
-    heightLeft -= pageHeight;
+  try {
+    await html2pdf().set(options).from(element).save();
+  } catch (err) {
+    console.error("PDF Export Error:", err);
+    alert("PDF export failed. Try using Ctrl+P in the browser.");
+  } finally {
+    isExporting.value = false;
   }
-
-  pdf.save("Sreyneath_Rom_Resume.pdf");
 };
 
-// 🧾 Resume Data
+// Resume Data
 const photo = photoFile;
 const name = 'SREYNEATH ROM';
 const title = 'WEB DEVELOPER';
@@ -193,6 +230,7 @@ const phone = '+855 96 250 4227';
 const email = 'romsreyneath4@gmail.com';
 const address = 'Phum Tropeang Chhuk (Borey Sorla), Street 371, Phnom Penh, Cambodia';
 
+// About
 const about = {
   fullName: 'Sreyneath ROM',
   dob: 'May 05, 2004',
@@ -202,11 +240,13 @@ const about = {
   status: 'Single'
 };
 
+// Education
 const education = [
   { degree: 'Associate Degree', institution: 'Passerelles Numériques Cambodia', years: '2024-Present' },
   { degree: 'High School Diploma', institution: 'Varin High School', years: '2020 - 2023' }
 ];
 
+// Technical Tools
 const technicalTools = [
   'Figma (Design)',
   'Canva',
@@ -215,25 +255,24 @@ const technicalTools = [
   'Postman',
   'Linux (Ubuntu)',
   'AWS (EC2)',
-  'MS Office (Word, Excel, PowerPoint)',
-  'AI Tools (ChatGPT, Gemini, etc.)',
+  'MS Office',
+  'AI Tools (ChatGPT, Gemini)',
   'Power BI'
 ];
 
-const languages = [
-  'Khmer (Excellent)',
-  'English (Intermediate)'
-];
+// Languages
+const languages = ['Khmer (Excellent)', 'English (Intermediate)'];
 
+// Hard Skills
 const hardSkills = [
   'HTML/CSS/SASS',
   'Bootstrap 5',
   'Tailwind CSS',
   'JavaScript',
   'PHP',
-  'Node.js (Basic REST API)',
+  'Node.js (REST API)',
   'Python (Algorithm)',
-  'Database (MySQL)',
+  'MySQL',
   'OOP (TypeScript)',
   'Vue.js',
   'Laravel',
@@ -242,6 +281,7 @@ const hardSkills = [
   'WordPress'
 ];
 
+// Soft Skills
 const softSkills = [
   'Problem Solving',
   'Adaptability',
@@ -253,12 +293,10 @@ const softSkills = [
   'Creative'
 ];
 
-const hobbies = [
-  'Researching',
-  'Coding Practice',
-  'Designing a Website On Trend'
-];
+// Hobbies
+const hobbies = ['Researching', 'Coding Practice', 'Web Design'];
 
+// Work Experience
 const workExperience = [
   {
     title: 'Pos System',
@@ -268,8 +306,8 @@ const workExperience = [
     descriptions: [
       'Monitored server performance and resolved infrastructure issues.',
       'Configured environments for development, testing, and production.',
-      'Designed responsive user interfaces with HTML, CSS, JavaScript, and Bootstrap 5.',
-      'Fetched and processed data using PHP and a connected database.'
+      'Designed responsive UIs using HTML, CSS, JavaScript, Bootstrap 5.',
+      'Fetched and processed backend data using PHP + Database.'
     ]
   },
   {
@@ -277,10 +315,10 @@ const workExperience = [
     date: 'Jan 14, 2025 - Jan 29, 2025',
     role: 'Designer',
     descriptions: [
-      'Designed responsive user interfaces with HTML, CSS, and Bootstrap 5.',
-      'Created wireframes and mockups using Figma.',
-      'Collaborated with developers to ensure design consistency.',
-      'Fetched and handled data using JavaScript.'
+      'Designed UI with HTML, CSS, and Bootstrap 5.',
+      'Created mockups using Figma.',
+      'Ensured consistent front-end behavior.',
+      'Fetched and handled data with JavaScript.'
     ]
   },
   {
@@ -288,9 +326,9 @@ const workExperience = [
     date: 'Nov 18, 2024 – Nov 28, 2024',
     role: 'Team Leader',
     descriptions: [
-      'Led a team of 3 members to develop a video downloader tool.',
-      'Structured the project workflow and delegated tasks.',
-      'Integrated JSON for dynamic configuration and settings.'
+      'Led a development team of 3 members.',
+      'Planned project structure and task assignment.',
+      'Integrated JSON-based configuration logic.'
     ]
   },
   {
@@ -298,9 +336,8 @@ const workExperience = [
     date: 'Oct 21, 2024 – Nov 5, 2024',
     role: 'Designer',
     descriptions: [
-      'Designed a visually appealing bakery website using SASS.',
-      'Enhanced layout responsiveness for a better user experience.',
-      'Maintained design consistency across pages.'
+      'Built a modern bakery website using SASS.',
+      'Improved responsive design and layout consistency.'
     ]
   },
   {
@@ -308,53 +345,53 @@ const workExperience = [
     date: 'June 18, 2024 – Aug 16, 2024',
     role: 'Designer',
     descriptions: [
-      'Created professional marketing brochures using Figma.',
-      'Applied branding guidelines and visual design principles.',
-      'Presented final designs to stakeholders for feedback and approval.'
+      'Designed marketing brochures using Figma.',
+      'Applied visual hierarchy and branding principles.'
     ]
   }
 ];
 
+// Technical Workshops
 const technicalWorkshops = [
   {
     title: 'Product Owner',
     date: 'Jan 18 & 25, 2025',
     descriptions: [
-      'Practiced defining product requirements and writing user stories.',
-      'Utilized Jira to manage and track tasks in an agile environment.',
-      'Collaborated in simulated roles (PO, Scrum Master, Dev Team) to understand agile team dynamics.',
-      'Applied agile principles to a mini-project for practical learning.'
+      'Wrote user stories using agile methods.',
+      'Used Jira for sprint task tracking.',
+      'Simulated PO, Scrum Master, Dev team collaboration.'
     ]
   },
   {
     title: 'UX/UI Design',
     date: 'Feb 7 & Mar 14, 2025',
     descriptions: [
-      'Translated user requirements into wireframes and interactive prototypes.',
-      'Applied design logic to improve usability and visual appeal.',
-      'Conducted user-centered design exercises and design reviews.'
+      'Created wireframes and prototypes.',
+      'Applied UX principles for better user experience.',
+      'Participated in design review sessions.'
     ]
   },
   {
     title: 'Data Analytics',
     date: 'Mar 19, 2025',
     descriptions: [
-      'Prepared and cleaned datasets using Python for analysis.',
-      'Visualized insights using Power BI dashboards.',
-      'Explored data storytelling techniques to communicate findings effectively.'
+      'Cleaned and prepared datasets using Python.',
+      'Built BI dashboards using Power BI.',
+      'Presented insights using storytelling techniques.'
     ]
   },
   {
     title: 'Project Management',
     date: 'Feb 8, 2025 — Felix Leuker',
     descriptions: [
-      'Explored project management fundamentals using agile methodologies.',
-      'Worked with tools such as Jira, Git, and GitHub to manage project workflows.',
-      'Simulated agile ceremonies (sprint planning, reviews, stand-ups) for real-world application.'
+      'Practiced agile project planning.',
+      'Used tools like Jira & GitHub for workflow.',
+      'Simulated sprint planning and standup meetings.'
     ]
   }
 ];
 
+// References
 const references = [
   {
     name: 'Mr. Rady Y',
@@ -376,54 +413,26 @@ const references = [
   }
 ];
 </script>
-
 <style>
-
-/* Export Button */
-.export-btn {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  padding: 10px 16px;
-  background: linear-gradient(to right, #6c757d, #adb5bd);
-  color: white;
-  font-weight: 600;
-  border: none;
-  border-radius: 8px;
-  cursor: pointer;
-  margin-top: 25px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
-  transition: all 0.3s ease;
-}
-.export-btn:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
-}
-/* Optional manual page-break */
 .page-break {
-  page-break-before: always;
-  margin-top: 20px;
+  page-break-after: always;   /* Forces new page after this element */
+  /* Remove any height/margin if you don't want extra blank space */
+  /* height: 0; */
 }
+
+/* Keep your existing @media print block, just add the color adjust inside it */
 @media print {
-  @page {
-    size: A4;
-    margin: 0;
-  }
   body {
     -webkit-print-color-adjust: exact;
     print-color-adjust: exact;
-    background: white;
   }
-  .export-btn {
-    display: none;
+
+  .page-break {
+    page-break-after: always;
   }
-  #app {
-    box-shadow: none;
-    margin: 0;
-  }
-  .left-column {
-    background-color: #e9ecef !important;
+
+  img {
+    max-width: 100%;
   }
 }
 </style>
