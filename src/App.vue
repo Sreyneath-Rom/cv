@@ -210,32 +210,7 @@
 
           <div class="page-break"></div>
 
-          <!-- Technical Workshops -->
-          <div class="mb-6">
-            <h3
-              class="bg-gray-700 text-white px-3 py-1 rounded text-sm uppercase tracking-wide mb-3"
-            >
-              Technical Workshops
-            </h3>
-            <div
-              v-for="workshop in technicalWorkshops"
-              :key="workshop.title"
-              class="mb-5"
-            >
-              <h4 class="text-base font-semibold">
-                {{ workshop.title }}
-                <span class="italic text-gray-600 text-sm"
-                  >({{ workshop.date }})</span
-                >
-              </h4>
-              <ul class="list-disc pl-5 text-sm">
-                <li v-for="desc in workshop.descriptions" :key="desc">
-                  {{ desc }}
-                </li>
-              </ul>
-            </div>
-          </div>
-
+         
           <!-- References -->
           <div>
             <h3
@@ -261,7 +236,7 @@
         :disabled="isExporting"
         class="px-8 py-3 bg-gradient-to-r from-gray-700 to-gray-900 text-white font-semibold rounded-lg shadow-lg hover:shadow-xl transition flex items-center gap-3 disabled:opacity-70"
       >
-        <span v-if="!isExporting">⬇️ Download PDF (Best for emailing)</span>
+        <span v-if="!isExporting">⬇️ Download PDF</span>
         <span v-else>Generating HD PDF...</span>
       </button>
 
@@ -269,7 +244,7 @@
         @click="printPDF"
         class="px-8 py-3 bg-green-600 text-white font-semibold rounded-lg shadow-lg hover:shadow-xl transition flex items-center gap-3"
       >
-        🖨️ Save/Print as PDF (Perfect quality)
+        🖨️ Save/Print as PDF
       </button>
     </div>
   </div>
@@ -280,16 +255,22 @@ import { ref, nextTick } from "vue";
 import photoFile from "@/assets/isme.png";
 import html2pdf from "html2pdf.js";
 
+/* -------------------------------------------
+   STATE
+------------------------------------------- */
 const resume = ref(null);
 const isExporting = ref(false);
-// Resume data
+
+/* -------------------------------------------
+   STATIC RESUME DATA
+------------------------------------------- */
 const photo = photoFile;
 const name = "SREYNEATH ROM";
 const title = "WEB DEVELOPER";
+
 const phone = "+855 96 250 4227";
 const email = "romsreyneath4@gmail.com";
-const address =
-  "Phum Tropeang Chhuk (Borey Sorla), Street 371, Phnom Penh, Cambodia";
+const address = "Phum Tropeang Chhuk (Borey Sorla), Street 371, Phnom Penh, Cambodia";
 
 const about = {
   fullName: "Sreyneath ROM",
@@ -299,68 +280,56 @@ const about = {
   nationality: "Khmer",
   status: "Single",
 };
+
 const education = [
-  {
-    degree: "Associate Degree",
-    institution: "Passerelles Numériques Cambodia",
-    years: "2024-Present",
-  },
-  {
-    degree: "High School Diploma",
-    institution: "Varin High School",
-    years: "2020 - 2023",
-  },
+  { degree: "Associate Degree", institution: "Passerelles Numériques Cambodia", years: "2024-Present" },
+  { degree: "High School Diploma", institution: "Varin High School", years: "2020 - 2023" },
 ];
+
 const technicalTools = [
-  "Figma (Design)",
-  "Canva",
-  "Jira",
-  "Git/GitHub",
-  "Postman",
-  "Linux (Ubuntu)",
-  "AWS (EC2)",
-  "MS Office",
-  "AI Tools (ChatGPT, Gemini)",
-  "Power BI",
+  "Figma (Design)", "Canva", "Jira", "Git/GitHub", "Postman", "Linux (Ubuntu)",
+  "AWS (EC2)", "Netlify", "MS Office", "AI Tools (ChatGPT, Gemini)",
+  "Power BI", "ClickUp", "Sunmi (MaxProgram)",
 ];
+
 const languages = ["Khmer (Excellent)", "English (Intermediate)"];
+
 const hardSkills = [
-  "HTML/CSS/SASS",
-  "Bootstrap 5",
-  "Tailwind CSS",
-  "JavaScript",
-  "PHP",
-  "Node.js (REST API)",
-  "Python (Algorithm)",
-  "MySQL",
-  "OOP (TypeScript)",
-  "Vue.js",
-  "Laravel",
-  "Data Analytics",
-  "Firebase",
-  "WordPress",
+  "HTML/CSS/SASS", "Bootstrap 5", "Tailwind CSS", "JavaScript",
+  "PHP", "Node.js (REST API)", "Python (Algorithm)", "MySQL",
+  "OOP (TypeScript)", "Vue.js", "Laravel", "Data Analytics",
+  "Firebase", "WordPress", "React Native",
 ];
+
 const softSkills = [
-  "Problem Solving",
-  "Adaptability",
-  "Teamwork",
-  "Time Management",
-  "Task Management",
-  "Communication",
-  "Critical Thinking",
-  "Creative",
+  "Problem Solving", "Adaptability", "Teamwork", "Time Management",
+  "Task Management", "Communication", "Critical Thinking", "Creative",
 ];
+
 const hobbies = ["Researching", "Coding Practice", "Web Design"];
+
 const workExperience = [
   {
-    title: "Pos System",
+    title: "Internship at Hong Hea Technology",
+    date: "Jul 21, 2025 - Jan 01, 2026",
+    role: "Software Specialist",
+    descriptions: [
+      "Developed and maintained applications using Sunmi (MaxProgram).",
+      "Provided technical support to customers.",
+      "Improved UI designs for the Heawork System using Figma.",
+      "Created user guide documentation for the Heawork System.",
+      "Tested the Heawork System and provided feedback for improvement.",
+    ],
+  },
+  {
+    title: "POS System",
     date: "Feb 10, 2025 - May 02, 2025",
     role: "DevOps",
     descriptions: [
       "Monitored server performance and resolved issues.",
-      "Configured environments for development & production.",
-      "Designed responsive UI using HTML, CSS, Bootstrap.",
-      "Fetched backend data using PHP + Database.",
+      "Configured development and production environments.",
+      "Designed responsive UIs using HTML, CSS, and Bootstrap.",
+      "Fetched backend data using PHP and a database.",
     ],
   },
   {
@@ -368,79 +337,33 @@ const workExperience = [
     date: "Jan 14, 2025 - Jan 29, 2025",
     role: "Designer",
     descriptions: [
-      "Designed UI with HTML, CSS, and Bootstrap.",
-      "Created mockups using Figma.",
-      "Ensured consistent front-end behavior.",
-      "Handled data with JavaScript.",
+      "Designed the UI using HTML, CSS, and Bootstrap.",
+      "Created mockups in Figma.",
+      "Ensured consistent front-end behavior across pages.",
+      "Managed data interactions using JavaScript.",
     ],
   },
   {
-    title: "Video Download",
+    title: "Video Downloader",
     date: "Nov 18, 2024 – Nov 28, 2024",
     role: "Team Leader",
     descriptions: [
-      "Led a development team of 3 members.",
-      "Planned project structure and task assignment.",
+      "Led a team of 3 developers.",
+      "Planned project structure and assigned tasks.",
       "Integrated JSON-based configuration logic.",
     ],
   },
   {
-    title: "Bakery Shop",
-    date: "Oct 21, 2024 – Nov 5, 2024",
+    title: "Bakery Shop Website",
+    date: "Oct 21, 2024 – Nov 05, 2024",
     role: "Designer",
     descriptions: [
-      "Built a modern bakery website using SASS.",
+      "Developed a modern bakery website using SASS.",
       "Improved responsive design and layout consistency.",
     ],
   },
-  {
-    title: "Brochure Design",
-    date: "June 18, 2024 – Aug 16, 2024",
-    role: "Designer",
-    descriptions: [
-      "Designed marketing brochures using Figma.",
-      "Applied visual hierarchy and branding principles.",
-    ],
-  },
 ];
-const technicalWorkshops = [
-  {
-    title: "Product Owner",
-    date: "Jan 18 & 25, 2025",
-    descriptions: [
-      "Wrote user stories using agile methods.",
-      "Used Jira for sprint tracking.",
-      "Simulated PO, Scrum Master, Dev collaboration.",
-    ],
-  },
-  {
-    title: "UX/UI Design",
-    date: "Feb 7 & Mar 14, 2025",
-    descriptions: [
-      "Created wireframes and prototypes.",
-      "Applied UX principles for better experience.",
-      "Participated in design review.",
-    ],
-  },
-  {
-    title: "Data Analytics",
-    date: "Mar 19, 2025",
-    descriptions: [
-      "Cleaned datasets using Python.",
-      "Built BI dashboards in Power BI.",
-      "Presented data insights.",
-    ],
-  },
-  {
-    title: "Project Management",
-    date: "Feb 8, 2025 — Felix Leuker",
-    descriptions: [
-      "Practiced agile planning.",
-      "Used Jira & GitHub for workflow.",
-      "Simulated sprint activities.",
-    ],
-  },
-];
+
 const references = [
   {
     name: "Mr. Rady Y",
@@ -461,6 +384,10 @@ const references = [
     email: "puthy.kry@passerellesnumeriques.org",
   },
 ];
+
+/* -------------------------------------------
+   CLEAN PDF EXPORT FUNCTION
+------------------------------------------- */
 const downloadPDF = async () => {
   if (!resume.value) return;
 
@@ -468,67 +395,61 @@ const downloadPDF = async () => {
   await document.fonts.ready;
   await nextTick();
 
-  // 1. Deep clone the resume
+  // Clone resume to avoid modifying UI
   const clone = resume.value.cloneNode(true);
 
-  // 2. Inject a style tag that forces old-safe hex colors (kills oklch/lab/lch forever)
-  const safeStyles = document.createElement("style");
-  safeStyles.textContent = `
-    * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
-    .bg-gray-200   { background-color: #e5e7eb !important; }
-    .bg-gray-700   { background-color: #374151 !important; }
-    .text-gray-600 { color: #4b5563 !important; }
-    .text-gray-700 { color: #374151 !important; }
-    .text-gray-800 { color: #1f2937 !important; }
-    .border-gray-600 { border-color: #4b5563 !important; }
-    .border-b-4 { border-bottom-width: 4px !important; }
-    .border-4 { border-width: 4px !important; }
+  // Global safe colors for html2canvas (prevent LAB/OKLCH)
+  const forceStyle = `
+    * { print-color-adjust: exact !important; -webkit-print-color-adjust: exact !important; }
+    .bg-gray-200 { background-color:#e5e7eb !important; }
+    .bg-gray-700 { background-color:#374151 !important; }
+    .text-gray-600 { color:#4b5563 !important; }
+    .text-gray-700 { color:#374151 !important; }
+    .text-gray-800 { color:#1f2937 !important; }
+    .border-gray-600 { border-color:#4b5563 !important; }
   `;
-  clone.prepend(safeStyles);
 
-  const opt = {
+  const styleTag = document.createElement("style");
+  styleTag.textContent = forceStyle;
+  clone.prepend(styleTag);
+
+  const options = {
     margin: 8,
     filename: "Sreyneath_Rom_Resume.pdf",
     image: { type: "jpeg", quality: 0.98 },
-    enableLinks: true,
     html2canvas: {
       scale: 4,
-      useCORS: true,
       backgroundColor: "#ffffff",
-      letterRendering: true,
-      logging: false,
       scrollX: 0,
       scrollY: 0,
       windowWidth: 2480,
-      // Double insurance: inject the same fix inside html2canvas's cloned document
+      logging: false,
       onclone: (doc) => {
-        const extraFix = doc.createElement("style");
-        extraFix.textContent = safeStyles.textContent;
-        doc.head.appendChild(extraFix);
+        const s = doc.createElement("style");
+        s.textContent = forceStyle;
+        doc.head.appendChild(s);
       },
     },
-    jsPDF: {
-      unit: "mm",
-      format: "letter",
-      orientation: "portrait",
-      compress: false,
-    },
+    jsPDF: { unit: "mm", format: "letter", orientation: "portrait" },
   };
 
   try {
-    await html2pdf().set(opt).from(clone).save();
+    await html2pdf().set(options).from(clone).save();
   } catch (err) {
-    console.error("html2pdf failed → fallback to browser print", err);
-    alert("High-quality export failed — using perfect browser print instead.");
-    setTimeout(() => window.print(), 300);
+    console.error("Export failed:", err);
+    alert("High-quality export failed — switching to browser PDF.");
+    window.print();
   } finally {
     isExporting.value = false;
   }
 };
 
-// Perfect vector PDF (recommended for most recruiters)
+/* -------------------------------------------
+   CLEAN PRINT FUNCTION
+------------------------------------------- */
 const printPDF = () => window.print();
 </script>
+
 
 <style>
 * {
@@ -552,3 +473,4 @@ const printPDF = () => window.print();
   }
 }
 </style>
+
